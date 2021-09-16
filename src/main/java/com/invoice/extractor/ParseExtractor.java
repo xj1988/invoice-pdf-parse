@@ -1,5 +1,6 @@
 package com.invoice.extractor;
 
+import cn.hutool.json.JSONUtil;
 import com.invoice.domain.Invoice;
 import com.invoice.domain.PDFKeyWordPosition;
 import com.invoice.domain.ParseChain;
@@ -10,8 +11,7 @@ import org.apache.pdfbox.pdmodel.PDPage;
 import org.apache.pdfbox.text.PDFTextStripper;
 import org.apache.pdfbox.text.PDFTextStripperByArea;
 
-import java.io.File;
-import java.io.IOException;
+import java.io.*;
 import java.util.Arrays;
 import java.util.List;
 
@@ -46,7 +46,26 @@ public class ParseExtractor {
     private static final List<String> keyWords = Arrays.asList("机器编号", "税率", "价税合计", "合计", "开票日期", "规格型号",
             "车牌号", "开户行及账号", "密", "码", "区");
 
-    public static Invoice extract(File file) throws IOException {
+
+    public static Invoice getInvoice(File file) throws IOException {
+        ByteArrayOutputStream bos = new ByteArrayOutputStream();
+        byte[] b = new byte[1024];
+        int n;
+        FileInputStream fis = new FileInputStream(file);
+        while ((n = fis.read(b)) != -1) {
+            bos.write(b, 0, n);
+        }
+        fis.close();
+        bos.close();
+        return getInvoice(bos.toByteArray());
+    }
+
+    public static String getInvoiceJsonStr(byte[] file) throws IOException {
+        Invoice invoice = getInvoice(file);
+        return JSONUtil.toJsonStr(invoice);
+    }
+
+    public static Invoice getInvoice(byte[] file) throws IOException {
         // 读出完整的内容
         PDDocument document = PDDocument.load(file);
         PDPage firstPage = document.getPage(0);

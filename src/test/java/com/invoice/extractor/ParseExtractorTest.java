@@ -40,7 +40,7 @@ public class ParseExtractorTest {
     private void parse(File file) throws IOException {
         StopWatch stopWatch = new StopWatch();
         stopWatch.start();
-        Invoice extract = ParseExtractor.extract(file);
+        Invoice extract = ParseExtractor.getInvoice(file);
         System.out.println(JSONUtil.toJsonStr(extract));
         stopWatch.stop();
         System.out.println("耗时：" + stopWatch.getTotalTimeSeconds());
