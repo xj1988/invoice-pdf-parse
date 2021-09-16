@@ -82,7 +82,7 @@ public abstract class AbstractRegularParse implements Parse {
                     Field field = fieldSetMethod.get(key);
                     ReflectUtil.setFieldValue(invoice, field, value);
                 } catch (Exception e) {
-                    //e.printStackTrace();
+                    e.printStackTrace();
                     logger.warn("invoice set value error", e);
                 }
             }

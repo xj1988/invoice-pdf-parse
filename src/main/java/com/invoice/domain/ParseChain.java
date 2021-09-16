@@ -48,7 +48,7 @@ public class ParseChain {
             try {
                 parse.doParse(parseRequest);
             } catch (Exception e) {
-                //e.printStackTrace();
+                e.printStackTrace();
                 logger.warn("parse error", e);
             }
         }

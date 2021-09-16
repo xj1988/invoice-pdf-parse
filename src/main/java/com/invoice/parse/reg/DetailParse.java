@@ -24,10 +24,13 @@ public class DetailParse extends AbstractRegularParse {
         String[] detailExcludeNameArray = mostArea.getTextForRegion("detailPrice").split("\n");
 
         List<Invoice.Detail> detailList = new ArrayList<>();
-        List<String> skipList = new ArrayList<>();
         for (String detailExcludeName : detailExcludeNameArray) {
+            // 清除非法行
+            if (detailExcludeName.matches("\\S*(金额|税率|税额|¥|￥)\\S*")) {
+                continue;
+            }
             Invoice.Detail detail = new Invoice.Detail();
-            // 规格型号、单位、数量、单价、金额、税率、税额
+            // 理想情况分割后：规格型号、单位、数量、单价、金额、税率、税额
             String[] itemArray = detailExcludeName.split("\\s+");
             int itemArrayLength = itemArray.length;
             if (2 == itemArrayLength) {
@@ -41,29 +44,27 @@ public class DetailParse extends AbstractRegularParse {
                     detailList.add(detail);
                 }
             } else if (2 < itemArrayLength) {
-                // 金额、税率、税额设置值
-                String taxRateStr = itemArray[itemArrayLength - 2].replaceAll("%", "");
-                if (taxRateStr.matches("[*￥%]")) {
-                    continue;
-                }
+                // 目前发现金额、税额是必须有的。并且税率出现"免税"字样，税额出现过"***"，暂不知是否有其他字样
                 detail.setAmount(new BigDecimal(itemArray[itemArrayLength - 3]));
-                if (NumberUtils.isCreatable(taxRateStr)) {
-                    BigDecimal taxRate = new BigDecimal(Integer.parseInt(taxRateStr));
-                    detail.setTaxRate(taxRate.divide(new BigDecimal(100)));
+                String taxRateStr = itemArray[itemArrayLength - 2].replaceAll("%", "");
+                if (NumberUtils.isDigits(taxRateStr)) {
+                    detail.setTaxRate(new BigDecimal(Integer.parseInt(taxRateStr)).divide(new BigDecimal(100)));
                 }
-                if (NumberUtils.isCreatable(itemArray[itemArrayLength - 1])) {
+                if (NumberUtils.isDigits(itemArray[itemArrayLength - 1])) {
                     detail.setTaxAmount(new BigDecimal(itemArray[itemArrayLength - 1]));
                 }
 
                 for (int j = 0; j < itemArrayLength - 3; j++) {
                     String temp = itemArray[j];
                     if (temp.matches("^(-?\\d+)(\\.\\d+)?$")) {
+                        // 如果匹配到数字，第一个是数量，第二个是单价
                         if (null == detail.getCount()) {
                             detail.setCount(new BigDecimal(temp));
                         } else {
                             detail.setPrice(new BigDecimal(temp));
                         }
                     } else {
+                        // 如果找到第一个文字，则看下面一个是否也是文字，如果也是，就是 规格和单位，如果只有一个，默认放到单位（目前样本看来，单位的更多）
                         if (itemArrayLength >= j + 1 && !itemArray[j + 1].matches("^(-?\\d+)(\\.\\d+)?$")) {
                             detail.setUnit(itemArray[j + 1]);
                             detail.setModel(temp);
@@ -76,18 +77,16 @@ public class DetailParse extends AbstractRegularParse {
                     }
                 }
                 detailList.add(detail);
-            } else {
-                skipList.add(detailExcludeName);
             }
         }
 
         // 设置明细名称
-        setDetailName(parseRequest, detailList, skipList);
+        setDetailName(parseRequest, detailList);
         Invoice invoice = parseRequest.getInvoice();
         invoice.setDetailList(detailList);
     }
 
-    private void setDetailName(ParseRequest parseRequest, List<Invoice.Detail> detailList, List<String> skipList) {
+    private void setDetailName(ParseRequest parseRequest, List<Invoice.Detail> detailList) {
         PDFTextStripperByArea detailArea = parseRequest.getDetail();
         PDFTextStripperByArea mostArea = parseRequest.getMost();
 

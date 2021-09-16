@@ -13,7 +13,7 @@ import java.util.List;
 
 public class ParseExtractorTest {
 
-    String path = "C:\\Users\\bosssoft-xj\\Documents\\WeChat Files\\wxid_ukjx9z9wv8sl22\\FileStorage\\File\\2021-09\\餐饮票.pdf";
+    String path = "C:\\Users\\bosssoft-xj\\Desktop\\文件\\发票\\68483288.pdf";
 
     String path2 = "/Users/xj/Downloads/税票解析/发票/68483288.pdf";
 
@@ -22,7 +22,7 @@ public class ParseExtractorTest {
         parse(new File(path));
     }
 
-    private String all = "C:\\Users\\bosssoft-xj\\Documents\\WeChat Files\\wxid_ukjx9z9wv8sl22\\FileStorage\\File\\2021-09\\新建文件夹";
+    private String all = "C:\\Users\\bosssoft-xj\\Desktop\\文件\\发票";
 
     private String all2 = "/Users/xj/Downloads/税票解析/发票/";
 
@@ -40,6 +40,7 @@ public class ParseExtractorTest {
     private void parse(File file) throws IOException {
         StopWatch stopWatch = new StopWatch();
         stopWatch.start();
+        System.out.println(file.getName());
         Invoice extract = ParseExtractor.getInvoice(file);
         System.out.println(JSONUtil.toJsonStr(extract));
         stopWatch.stop();
