@@ -89,6 +89,7 @@ public class AddRegionParse extends AbstractRegularParse {
             most.addRegion("seller", new Rectangle(x, y, w, h));
         }
 
+        // 规格型号
         PDFKeyWordPosition.Position model = positionListMap.get("model").get(0);
         {
             // 规格型号作为x轴

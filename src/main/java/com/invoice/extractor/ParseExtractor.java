@@ -5,7 +5,7 @@ import com.invoice.domain.Invoice;
 import com.invoice.domain.PDFKeyWordPosition;
 import com.invoice.domain.ParseChain;
 import com.invoice.domain.ParseRequest;
-import com.invoice.parse.reg.*;
+import com.invoice.parse.Parse;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDPage;
 import org.apache.pdfbox.text.PDFTextStripper;
@@ -14,6 +14,7 @@ import org.apache.pdfbox.text.PDFTextStripperByArea;
 import java.io.*;
 import java.util.Arrays;
 import java.util.List;
+import java.util.ServiceLoader;
 
 /**
  * @author xj
@@ -23,21 +24,10 @@ import java.util.List;
 public class ParseExtractor {
 
     static {
-        ParseChain.addParse(new HeadRegularParse());
-        ParseChain.addParse(new TypeRegularParse());
-        ParseChain.addParse(new TaxAmountRegularParse());
-        ParseChain.addParse(new TotalAmountRegularParse());
-        ParseChain.addParse(new BottomRegularParse());
-
-        // 添加关键字区域
-        ParseChain.addParse(new AddKeyWordsPositionParse());
-        // 根据关键字区域添加区域
-        ParseChain.addParse(new AddRegionParse());
-
-        ParseChain.addParse(new PasswordRegularParse());
-        ParseChain.addParse(new BuyerInfoRegularParse());
-        ParseChain.addParse(new SellerRegularParse());
-        ParseChain.addParse(new DetailParse());
+        ServiceLoader<Parse> load = ServiceLoader.load(Parse.class);
+        for (Parse parse : load) {
+            ParseChain.addParse(parse);
+        }
     }
 
     /**

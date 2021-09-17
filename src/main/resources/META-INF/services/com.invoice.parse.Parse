@@ -1,0 +1,14 @@
+com.invoice.parse.reg.HeadRegularParse
+com.invoice.parse.reg.TypeRegularParse
+com.invoice.parse.reg.TaxAmountRegularParse
+com.invoice.parse.reg.TotalAmountRegularParse
+com.invoice.parse.reg.BottomRegularParse
+
+#
+com.invoice.parse.reg.AddKeyWordsPositionParse
+com.invoice.parse.reg.AddRegionParse
+
+com.invoice.parse.reg.PasswordRegularParse
+com.invoice.parse.reg.BuyerInfoRegularParse
+com.invoice.parse.reg.SellerRegularParse
+com.invoice.parse.reg.DetailParse

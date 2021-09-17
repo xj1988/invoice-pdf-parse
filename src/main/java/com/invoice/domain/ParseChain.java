@@ -1,13 +1,11 @@
 package com.invoice.domain;
 
 
-import cn.hutool.core.util.ReflectUtil;
 import com.invoice.parse.Parse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.lang.reflect.Field;
-import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -48,7 +46,7 @@ public class ParseChain {
             try {
                 parse.doParse(parseRequest);
             } catch (Exception e) {
-                e.printStackTrace();
+                //e.printStackTrace();
                 logger.warn("parse error", e);
             }
         }
