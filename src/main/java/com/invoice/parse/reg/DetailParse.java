@@ -48,7 +48,7 @@ public class DetailParse extends AbstractRegularParse {
                 detail.setAmount(new BigDecimal(itemArray[itemArrayLength - 3]));
                 String taxRateStr = itemArray[itemArrayLength - 2].replaceAll("%", "");
                 if (NumberUtils.isDigits(taxRateStr)) {
-                    detail.setTaxRate(new BigDecimal(Integer.parseInt(taxRateStr)).divide(new BigDecimal(100)));
+                    detail.setTaxRate(new BigDecimal(Integer.parseInt(taxRateStr)));
                 }
                 if (NumberUtils.isDigits(itemArray[itemArrayLength - 1])) {
                     detail.setTaxAmount(new BigDecimal(itemArray[itemArrayLength - 1]));

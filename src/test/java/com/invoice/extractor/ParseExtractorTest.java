@@ -13,7 +13,7 @@ import java.util.List;
 
 public class ParseExtractorTest {
 
-    String path = "C:\\Users\\bosssoft-xj\\Desktop\\文件\\发票\\68483288.pdf";
+    String path = "C:\\Users\\bosssoft-xj\\Documents\\WeChat Files\\wxid_ukjx9z9wv8sl22\\FileStorage\\File\\2021-11\\上传失败pdf.pdf";
 
     String path2 = "/Users/xj/Downloads/税票解析/发票/68483288.pdf";
 
@@ -41,8 +41,12 @@ public class ParseExtractorTest {
         StopWatch stopWatch = new StopWatch();
         stopWatch.start();
         System.out.println(file.getName());
-        Invoice extract = ParseExtractor.getInvoice(file);
-        System.out.println(JSONUtil.toJsonStr(extract));
+        Invoice invoice = ParseExtractor.getInvoice(file);
+        // 开票日期去掉年月日
+        String date = invoice.getDate();
+        String tmpDate = date.replaceAll("日", "");
+        invoice.setDate(tmpDate.replaceAll("[\\u4E00-\\u9FA5]", "-"));
+        System.out.println(JSONUtil.toJsonStr(invoice));
         stopWatch.stop();
         System.out.println("耗时：" + stopWatch.getTotalTimeSeconds());
     }

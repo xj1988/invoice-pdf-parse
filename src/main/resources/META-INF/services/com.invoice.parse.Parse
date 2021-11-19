@@ -4,7 +4,7 @@ com.invoice.parse.reg.TaxAmountRegularParse
 com.invoice.parse.reg.TotalAmountRegularParse
 com.invoice.parse.reg.BottomRegularParse
 
-#
+# 设定区域信息
 com.invoice.parse.reg.AddKeyWordsPositionParse
 com.invoice.parse.reg.AddRegionParse
 
