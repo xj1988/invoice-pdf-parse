@@ -3,6 +3,7 @@ package com.invoice.parse.reg;
 import com.invoice.domain.Invoice;
 import com.invoice.domain.ParseRequest;
 import com.invoice.parse.AbstractRegularParse;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.math.NumberUtils;
 import org.apache.pdfbox.text.PDFTextStripperByArea;
 
@@ -45,7 +46,9 @@ public class DetailParse extends AbstractRegularParse {
                 }
             } else if (2 < itemArrayLength) {
                 // 目前发现金额、税额是必须有的。并且税率出现"免税"字样，税额出现过"***"，暂不知是否有其他字样
-                detail.setAmount(new BigDecimal(itemArray[itemArrayLength - 3]));
+                if (NumberUtils.isDigits(itemArray[itemArrayLength - 3])) {
+                    detail.setAmount(new BigDecimal(itemArray[itemArrayLength - 3]));
+                }
                 String taxRateStr = itemArray[itemArrayLength - 2].replaceAll("%", "");
                 if (NumberUtils.isDigits(taxRateStr)) {
                     detail.setTaxRate(new BigDecimal(Integer.parseInt(taxRateStr)));
@@ -83,7 +86,13 @@ public class DetailParse extends AbstractRegularParse {
         // 设置明细名称
         setDetailName(parseRequest, detailList);
         Invoice invoice = parseRequest.getInvoice();
+        // 排除没有识别完整的明细
+        excludeDetails(detailList);
         invoice.setDetailList(detailList);
+    }
+
+    private void excludeDetails(List<Invoice.Detail> detailList) {
+        detailList.removeIf(next -> StringUtils.isEmpty(next.getName()));
     }
 
     private void setDetailName(ParseRequest parseRequest, List<Invoice.Detail> detailList) {
