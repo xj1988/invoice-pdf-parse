@@ -43,6 +43,13 @@ public abstract class AbstractRegularParse implements Parse {
         return null;
     }
 
+    /**
+     * 校验字段设值是否成功
+     */
+    protected void check(String fullText, Invoice invoice, Map<String, Field> invoiceField) {
+
+    }
+
     @Override
     public void doParse(ParseRequest parseRequest) {
         Invoice invoice = parseRequest.getInvoice();
@@ -54,7 +61,11 @@ public abstract class AbstractRegularParse implements Parse {
         if (!StringUtils.isEmpty(keyWord)) {
             fullText = replace(most.getTextForRegion(keyWord));
         }
-        doSetInvoice(invoice, regular, fullText, parseRequest.getInvoiceField());
+        // 根据正则表达式匹配结果设置属性
+        Map<String, Field> invoiceField = parseRequest.getInvoiceField();
+        doSetInvoice(invoice, regular, fullText, invoiceField);
+        // 校验设置后结果
+        check(fullText, invoice, invoiceField);
     }
 
     /**
@@ -64,7 +75,7 @@ public abstract class AbstractRegularParse implements Parse {
      * @param regular  正则
      * @param fullText pdf所有文本内容
      */
-    public void doSetInvoice(Invoice invoice, String regular, String fullText, Map<String, Field> fieldSetMethod) {
+    protected void doSetInvoice(Invoice invoice, String regular, String fullText, Map<String, Field> fieldSetMethod) {
         // 提取正则表达式中的key,即Invoice的属性名称
         List<String> keys = getKeys(regex, regular);
         // 匹配key

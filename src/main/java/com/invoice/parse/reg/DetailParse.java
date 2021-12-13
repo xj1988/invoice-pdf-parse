@@ -41,46 +41,41 @@ public class DetailParse extends AbstractRegularParse {
                 if (NumberUtils.isCreatable(itemArray[1])) {
                     detail.setTaxAmount(new BigDecimal(itemArray[1]));
                 }
-                if (detail.getAmount() != null || detail.getTaxAmount() != null) {
-                    detailList.add(detail);
-                }
             } else if (2 < itemArrayLength) {
-                // 目前发现金额、税额是必须有的。并且税率出现"免税"字样，税额出现过"***"，暂不知是否有其他字样
-                if (NumberUtils.isDigits(itemArray[itemArrayLength - 3])) {
-                    detail.setAmount(new BigDecimal(itemArray[itemArrayLength - 3]));
+                // 目前发现金额、税额是必须有的。并且税率出现"免税"字样，税额出现过"*"，暂不知是否有其他字样
+                // 税额
+                String taxAmount = itemArray[itemArrayLength - 1];
+                if (NumberUtils.isCreatable(taxAmount)) {
+                    detail.setTaxAmount(new BigDecimal(taxAmount));
                 }
-                String taxRateStr = itemArray[itemArrayLength - 2].replaceAll("%", "");
-                if (NumberUtils.isDigits(taxRateStr)) {
-                    detail.setTaxRate(new BigDecimal(Integer.parseInt(taxRateStr)));
+                // 税率
+                String taxRate = itemArray[itemArrayLength - 2].replaceAll("%", "");
+                if (NumberUtils.isCreatable(taxRate)) {
+                    detail.setTaxRate(new BigDecimal(taxRate));
                 }
-                if (NumberUtils.isDigits(itemArray[itemArrayLength - 1])) {
-                    detail.setTaxAmount(new BigDecimal(itemArray[itemArrayLength - 1]));
+                // 金额
+                String amount = itemArray[itemArrayLength - 3];
+                if (NumberUtils.isCreatable(amount)) {
+                    detail.setAmount(new BigDecimal(amount));
                 }
-
-                for (int j = 0; j < itemArrayLength - 3; j++) {
-                    String temp = itemArray[j];
-                    if (temp.matches("^(-?\\d+)(\\.\\d+)?$")) {
-                        // 如果匹配到数字，第一个是数量，第二个是单价
-                        if (null == detail.getCount()) {
-                            detail.setCount(new BigDecimal(temp));
-                        } else {
-                            detail.setPrice(new BigDecimal(temp));
-                        }
-                    } else {
-                        // 如果找到第一个文字，则看下面一个是否也是文字，如果也是，就是 规格和单位，如果只有一个，默认放到单位（目前样本看来，单位的更多）
-                        if (itemArrayLength >= j + 1 && !itemArray[j + 1].matches("^(-?\\d+)(\\.\\d+)?$")) {
-                            detail.setUnit(itemArray[j + 1]);
-                            detail.setModel(temp);
-                            j++;
-                        } else if (temp.length() > 2) {
-                            detail.setModel(temp);
-                        } else {
-                            detail.setUnit(temp);
-                        }
-                    }
+                // 单价
+                if (itemArrayLength >= 4 && NumberUtils.isCreatable(itemArray[itemArrayLength - 4])) {
+                    detail.setPrice(new BigDecimal(itemArray[itemArrayLength - 4]));
                 }
-                detailList.add(detail);
+                // 数量
+                if (itemArrayLength >= 5 && NumberUtils.isDigits(itemArray[itemArrayLength - 5])) {
+                    detail.setCount(new BigDecimal(itemArray[itemArrayLength - 5]));
+                }
+                // 单位
+                if (itemArrayLength >= 6 && !itemArray[itemArrayLength - 6].matches("^(-?\\d+)(\\.\\d+)?$")) {
+                    detail.setUnit(itemArray[itemArrayLength - 6]);
+                }
+                // 规格型号
+                if (itemArrayLength >= 7 && !itemArray[itemArrayLength - 7].matches("^(-?\\d+)(\\.\\d+)?$")) {
+                    detail.setModel(itemArray[itemArrayLength - 7]);
+                }
             }
+            detailList.add(detail);
         }
 
         // 设置明细名称

@@ -1,8 +1,13 @@
 package com.invoice.parse.reg;
 
 
+import com.invoice.domain.Invoice;
 import com.invoice.parse.AbstractRegularParse;
+import org.apache.commons.lang3.StringUtils;
 
+import java.lang.reflect.Field;
+import java.util.Map;
+import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /**
@@ -23,4 +28,15 @@ public class HeadRegularParse extends AbstractRegularParse {
         return reg;
     }
 
+    @Override
+    protected void check(String fullText, Invoice invoice, Map<String, Field> invoiceField) {
+        if (StringUtils.isEmpty(invoice.getCode())) {
+            // 有样本显示，票代码被识被提取到标题中
+            String invoiceTitle = "通发票(?<code>\\d{12})";
+            Matcher code = Pattern.compile(invoiceTitle).matcher(fullText);
+            if (code.find()) {
+                invoice.setCode(code.group("code"));
+            }
+        }
+    }
 }

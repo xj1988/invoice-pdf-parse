@@ -1,8 +1,12 @@
 package com.invoice.parse.reg;
 
 
+import com.invoice.domain.Invoice;
 import com.invoice.parse.AbstractRegularParse;
+import org.apache.commons.lang3.StringUtils;
 
+import java.lang.reflect.Field;
+import java.util.Map;
 import java.util.regex.Pattern;
 
 /**
@@ -19,4 +23,12 @@ public class BottomRegularParse extends AbstractRegularParse {
         return reg;
     }
 
+    @Override
+    protected void check(String fullText, Invoice invoice, Map<String, Field> invoiceField) {
+        // 有样本没有销售方盖章区域
+        if (StringUtils.isEmpty(invoice.getPayee()) && StringUtils.isEmpty(invoice.getReviewer()) && StringUtils.isEmpty(invoice.getDrawer())) {
+            String reg = "收款人:(?<payee>\\S*)复核:(?<reviewer>\\S*)开票人:(?<drawer>\\S*)";
+            doSetInvoice(invoice, reg, fullText, invoiceField);
+        }
+    }
 }
